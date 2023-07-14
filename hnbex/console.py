@@ -119,9 +119,9 @@ COMMANDS = [
                 "type": currency_type,
             }),
             (["target_currency"], {
-                "help": "currency code to which to convert (defaults to HRK)",
+                "help": "currency code to which to convert (defaults to EUR)",
                 "type": currency_type,
-                "default": "HRK",
+                "default": "EUR",
                 "nargs": "?",
             }),
             (["-d", "--date"], {
@@ -161,8 +161,8 @@ COMMON_ARGS = [
 
 def get_parser():
     description = """
-        Exhange rates for Croatian Kuna (HRK) published by the Croatian National Bank (HNB).
-        Data fetched from hnb.ex, a service provided by Dobar Kod.
+        Exhange rates for Euro (EUR) published by the Croatian National Bank (HNB).
+        Data fetched from api.hnb.hr, a service provided by HNB.
     """
 
     parser = ArgumentParser(prog='hnbex', description=description, epilog=CLIENT_WEBSITE)
