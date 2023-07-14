@@ -17,7 +17,6 @@ logger = logging.getLogger("hnbex")
 class ExchangeRate:
     date: date
     currency_code: str
-    unit_value: int
     buying_rate: Decimal
     median_rate: Decimal
     selling_rate: Decimal
@@ -28,16 +27,26 @@ class ApiError(Exception):
 
 
 def fetch_daily(date: date, currency_code: Optional[str] = None) -> List[ExchangeRate]:
-    url = f"https://api.hnb.hr/tecajn/v2?datum-primjene={date}"
+    url = f"https://api.hnb.hr/tecajn-eur/v3?datum-primjene={date}"
 
-    if currency_code:
+    if currency_code is not None:
         url += f"&valuta={currency_code}"
+
+    if currency_code == 'EUR':
+        eur = {
+            'datum_primjene': '2023-01-01',
+            'valuta': 'EUR',
+            'kupovni_tecaj': '7.5345',
+            'srednji_tecaj': '7.5345',
+            'prodajni_tecaj': '7.5345'
+        }
+        return [_to_rate(eur)]
 
     return _api_get(url)
 
 
 def fetch_range(currency: str, from_date: date, to_date: date) -> List[ExchangeRate]:
-    url = f"https://api.hnb.hr/tecajn/v2?valuta={currency}&datum-primjene-od={from_date}&datum-primjene-do={to_date}"
+    url = f"https://api.hnb.hr/tecajn-eur/v3?valuta={currency}&datum-primjene-od={from_date}&datum-primjene-do={to_date}"
 
     return _api_get(url)
 
@@ -63,7 +72,6 @@ def _to_rate(record: dict) -> ExchangeRate:
     return ExchangeRate(
         date=date.fromisoformat(record["datum_primjene"]),
         currency_code=record["valuta"],
-        unit_value=record["jedinica"],
         buying_rate=_parse_decimal(record["kupovni_tecaj"]),
         median_rate=_parse_decimal(record["srednji_tecaj"]),
         selling_rate=_parse_decimal(record["prodajni_tecaj"]),
