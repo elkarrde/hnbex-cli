@@ -50,8 +50,8 @@ def print_conversion(amount, result, source_currency, target_currency, rate, **k
     if 'value_only' in kwargs and kwargs['value_only'] is True:
         return print_out(str(result))
 
-    if 'result_eur' in kwargs:
-        print_out(f"{amount} {source_currency} (= <blue>{kwargs['result_eur']} EUR</blue>) = <green>{result} {target_currency}</green>\n")
+    if 'show_euro' in kwargs and kwargs['show_euro'] is True and 'result_eur' in kwargs:
+        print_out(f"{amount} {source_currency} = <blue>{kwargs['result_eur']} EUR</blue> = <green>{result} {target_currency}</green>\n")
     else:
         print_out(f"{amount} {source_currency} = <green>{result} {target_currency}</green>\n")
 

@@ -139,6 +139,11 @@ COMMANDS = [
                 "type": int,
                 "default": 2,
             }),
+            (["-e", "--show-euro"], {
+                "help": "when converting from HRK to currencies other than EUR, show EUR middle-value",
+                "action": 'store_true',
+                "default": False,
+            }),
         ],
     ),
 ]
