@@ -1,10 +1,16 @@
 hnbex-cli changelog
 ====================
 
+**3.0.0 (2023-07-15)**
+
+* Switch to EUR as a default currency
+* Read data from the updated ``api.hnb.hr`` API URL
+* Added conversion to HRK using the official fixed rate
+
 **2.0.0 (2022-11-15)**
 
 * **Breaking:** Requires Python 3.7+
-* Read data from api.hnb.hr, since hnbex.eu is shutting down
+* Read data from ``api.hnb.hr``, since hnbex.eu is shutting down
 
 **1.1.0 (2022-07-31)**
 

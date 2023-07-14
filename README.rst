@@ -1,8 +1,8 @@
 HNB Exchange Rate CLI
 =====================
 
-Displays exchange rates for Croatian Kuna (HRK) from the Croatian National Bank
-(HNB). Data is fetched from the [HNB API](https://api.hnb.hr/).
+Displays exchange rates for Euro (EUR) or to legacy Croatian Kuna (HRK) from the Croatian National
+Bank (HNB). Data is fetched from the [HNB API](https://api.hnb.hr/).
 
 
 .. image:: https://img.shields.io/badge/author-%40ihabunek-blue.svg?maxAge=3600&style=flat-square
@@ -42,27 +42,27 @@ Show rates for all currencies on a given date (if not given, date defaults to to
 
 .. code-block::
 
-    $ hnbex daily 2017-07-03
+    $ hnbex daily 2023-07-15
 
 .. code-block::
 
-    HNB exchange rates on 2017-07-03
+    HNB exchange rates on 2023-07-14
 
-    Currency  Unit    Buying    Median   Selling
-    --------  ----  --------  --------  --------
-    AUD          1  4.974959  4.989929  5.004899
-    CAD          1  4.984697  4.999696  5.014695
-    CZK          1  0.281550  0.282397  0.283244
-    DKK          1  0.993132  0.996120  0.999108
-    HUF        100  2.390306  2.397498  2.404690
-    JPY        100  5.783341  5.800743  5.818145
-    NOK          1  0.772153  0.774476  0.776799
-    SEK          1  0.764812  0.767113  0.769414
-    CHF          1  6.756313  6.776643  6.796973
-    GBP          1  8.410575  8.435883  8.461191
-    USD          1  6.474949  6.494432  6.513915
-    EUR          1  7.385326  7.407549  7.429772
-    PLN          1  1.748834  1.754096  1.759358
+    Currency   Buying   Median  Selling  Spread
+    --------  -------  -------  -------  ------
+         AUD   1.6323   1.6299   1.6275  -0.29%
+         CAD   1.4736   1.4714   1.4692  -0.30%
+         CZK   23.788   23.752   23.716  -0.30%
+         DKK   7.4635   7.4523   7.4411  -0.30%
+         HUF   375.71   375.15   374.59  -0.30%
+         JPY   155.07   154.84   154.61  -0.30%
+         NOK  11.2649  11.2480  11.2311  -0.30%
+         SEK  11.5273  11.5100  11.4927  -0.30%
+         CHF   0.9658   0.9644   0.9630  -0.29%
+         GBP  0.85681  0.85553  0.85425  -0.30%
+         USD   1.1199   1.1182   1.1165  -0.30%
+         BAM  1.95876  1.95583  1.95290  -0.30%
+         PLN   4.4389   4.4323   4.4257  -0.30%
 
 
 Range
@@ -82,20 +82,21 @@ The range defaults to the last 30 days, and can be changed by giving one or more
 
 .. code-block::
 
-    HNB exchange rates for USD from 2021-08-26 to 2021-09-04
+    HNB exchange rates for USD from 2023-07-06 to 2023-07-15
 
-          Date  Unit    Buying    Median   Selling    Diff
-    ----------  ----  --------  --------  --------  ------
-    2021-08-26     1  6.353770  6.372889  6.392008
-    2021-08-27     1  6.341215  6.360296  6.379377  -0.20%
-    2021-08-28     1  6.346328  6.365424  6.384520  +0.08%
-    2021-08-29     1  6.346328  6.365424  6.384520   0.00%
-    2021-08-30     1  6.346328  6.365424  6.384520   0.00%
-    2021-08-31     1  6.323093  6.342119  6.361145  -0.37%
-    2021-09-01     1  6.314960  6.333962  6.352964  -0.13%
-    2021-09-02     1  6.315040  6.334042  6.353044  +0.00%
-    2021-09-03     1  6.294947  6.313889  6.332831  -0.32%
-    2021-09-04     1  6.291559  6.310490  6.329421  -0.05%
+          Date  Buying  Median  Selling    Diff
+    ----------  ------  ------  -------  ------
+    2023-07-06  1.0895  1.0879   1.0863
+    2023-07-07  1.0915  1.0899   1.0883  +0.18%
+    2023-07-08  1.0904  1.0888   1.0872  -0.10%
+    2023-07-09  1.0904  1.0888   1.0872   0.00%
+    2023-07-10  1.0904  1.0888   1.0872   0.00%
+    2023-07-11  1.0972  1.0956   1.0940  +0.62%
+    2023-07-12  1.1005  1.0989   1.0973  +0.30%
+    2023-07-13  1.1039  1.1022   1.1005  +0.30%
+    2023-07-14  1.1199  1.1182   1.1165  +1.45%
+    2023-07-15  1.1238  1.1221   1.1204  +0.35%
+
 
 Chart
 ~~~~~
@@ -147,7 +148,8 @@ Which displays the chart:
 Convert
 ~~~~~~~
 
-Convert between HRK and anouther currency:
+Convert between HRK and anouther currency, using EUR as a middle-currency, and the official
+EUR to HRK exchange rate:
 
 .. code-block::
 
@@ -155,11 +157,23 @@ Convert between HRK and anouther currency:
 
 .. code-block::
 
-    150.0 HRK = 23.82 USD
+    150 HRK = 22.26 USD
 
-    Using the median rate 1 USD = 6.296589 HRK defined on 2017-08-21
+    Using the median rate 1 USD = 6.296589 HRK defined on 2017-08-21 and fixed rate 1 EUR = 7.5345 HRK
 
-When converting to HRK, the target currency can be ommited:
+Use ``--euro`` or ``-e`` option to show intermediate value in EUR. Ignored for conversions not from/to HRK.
+
+.. code-block::
+
+    $ hnbex convert 150 hrk usd -e
+
+.. code-block::
+
+    150 HRK = 19.91 EUR = 22.26 USD
+
+    Using the median rate 1 USD = 6.296589 HRK defined on 2017-08-21 and fixed rate 1 EUR = 7.5345 HRK
+
+When converting to EUR, the target currency can be ommited:
 
 .. code-block::
 
@@ -167,33 +181,40 @@ When converting to HRK, the target currency can be ommited:
 
 .. code-block::
 
-    500.0 JPY = 28.85 HRK
+    500 JPY = 3.23 EUR
 
-    Using the median rate 100 JPY = 5.769743 HRK defined on 2017-08-21
+    Using the median rate 1 EUR = 154.84 JPY defined on 2023-07-14
 
 If ``--value-only`` or ``-v`` option is used, only the resulting value will be output.
 
 .. code-block::
 
-    $ hnbex convert 500 jpy
+    $ hnbex convert 500 jpy -v
 
 .. code-block::
 
-    28.85
+    3.23
 
 The resulting value is rounded to 2 decimal places by default but can be changed by using the ``-p`` or ``--precision`` option:
 
 .. code-block::
 
-    $ hnbex convert 500 jpy -p 10
+    $ hnbex convert 500 jpy -p 10 -v
 
 .. code-block::
 
-    28.8487150000
+    3.2291397572
+
 
 License
 -------
 
-Copyright © 2017-2021 Ivan Habunek <ivan@habunek.com>
+Copyright © 2017-2023 Ivan Habunek <ivan@habunek.com>
 
 Licensed under the GPLv3: http://www.gnu.org/licenses/gpl-3.0.html
+
+
+Contributors
+~~~~~~~~~~~~
+
+Neven Falica <nfalica@gmail.com> - 2023 update
