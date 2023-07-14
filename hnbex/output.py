@@ -46,6 +46,22 @@ def print_out(*args, **kwargs):
     print(*args, **kwargs)
 
 
+def print_conversion(amount, result, source_currency, target_currency, rate, **kwargs):
+    if 'value_only' in kwargs and kwargs['value_only'] is True:
+        return print_out(str(result))
+
+    if 'result_eur' in kwargs:
+        print_out(f"{amount} {source_currency} (= <blue>{kwargs['result_eur']} EUR</blue>) = <green>{result} {target_currency}</green>\n")
+    else:
+        print_out(f"{amount} {source_currency} = <green>{result} {target_currency}</green>\n")
+
+    print_out(
+        f"Using the median rate 1 EUR =",
+        f"{rate.median_rate} {rate.currency_code} defined on {rate.date}",
+        f"and fixed rate 1 EUR = {kwargs['hrk_rate']} HRK" if 'hrk_rate' in kwargs else ""
+    )
+
+
 def print_err(*args, **kwargs):
     args = ["<red>{}</red>".format(a) for a in args]
     args = [colorize(a) if USE_ANSI_COLOR else strip_tags(a) for a in args]

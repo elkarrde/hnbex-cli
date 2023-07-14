@@ -7,7 +7,11 @@ from os.path import realpath, join, dirname
 from subprocess import call
 
 from hnbex.api import fetch_daily, fetch_range
-from hnbex.output import print_out, print_err, print_table
+from hnbex.output import print_out, print_conversion, print_err, print_table
+
+
+HRK_EUR_RATE = Decimal(7.5345)
+allowed_currencies = ['EUR', 'HRK']
 
 
 class CommandError(Exception):
@@ -38,14 +42,13 @@ def daily(date, **kwargs):
 
     data = [(
         wrap("yellow", rate.currency_code),
-        rate.unit_value,
         rate.buying_rate,
         rate.median_rate,
         rate.selling_rate,
         spread(rate)
     ) for rate in rates]
 
-    headers = ["Currency", "Unit", "Buying", "Median", "Selling", "Spread"]
+    headers = ["Currency", "Buying", "Median", "Selling", "Spread"]
     print_table(headers, data)
 
 
@@ -85,7 +88,6 @@ def _range_lines(rates):
 
         yield(
             wrap("yellow", rate.date),
-            rate.unit_value,
             rate.buying_rate,
             rate.median_rate,
             rate.selling_rate,
@@ -109,7 +111,7 @@ def range(currency, start, end, days, **kwargs):
         print_out("No data found for given date range")
         return
 
-    headers = ['Date', 'Unit', 'Buying', 'Median', 'Selling', 'Diff']
+    headers = ['Date', 'Buying', 'Median', 'Selling', 'Diff']
     print_table(headers, _range_lines(rates))
 
 
@@ -126,30 +128,62 @@ def convert(amount, source_currency, target_currency, date, precision, value_onl
     if precision < 0:
         raise CommandError("Precision must be greater than 0.")
 
-    if source_currency != 'HRK' and target_currency != 'HRK':
-        raise CommandError("Either source or target currency must be HRK.")
+    if source_currency not in allowed_currencies and target_currency not in allowed_currencies:
+        raise CommandError("Either source or target currency must be EUR or HRK.")
 
     if source_currency == target_currency:
         raise CommandError("Source and target currency are the same.")
 
-    if source_currency == 'HRK':
-        rate = _get_rate(date, target_currency)
-        result = amount / (rate.median_rate / rate.unit_value)
+    if source_currency in allowed_currencies and target_currency in allowed_currencies:
+        return convert_eurhrk(amount, source_currency, target_currency, date, precision, value_only)
+    elif source_currency == 'HRK' or target_currency == 'HRK':
+        return convert_hrk(amount, source_currency, target_currency, date, precision, value_only)
     else:
-        rate = _get_rate(date, source_currency)
-        result = amount * (rate.median_rate / rate.unit_value)
+        if source_currency == 'EUR':
+            rate = _get_rate(date, target_currency)
+            result = amount * rate.median_rate
+        else:
+            rate = _get_rate(date, source_currency)
+            result = amount / rate.median_rate
 
     exponent = Decimal(10) ** -precision
     result = result.quantize(exponent)
 
-    if value_only:
-        print_out(result)
-    else:
-        print_out(f"{amount} {source_currency} = <green>{result} {target_currency}</green>\n")
-        print_out(
-            f"Using the median rate {rate.unit_value} {rate.currency_code} =",
-            f"{rate.median_rate} HRK defined on {rate.date}"
-        )
+    print_conversion(amount, result, source_currency, target_currency, rate)
+
+
+def convert_hrk(amount, source_currency, target_currency, date, precision, value_only, **kwargs):
+    if source_currency == 'HRK' and target_currency != 'EUR':
+        rate = _get_rate(date, target_currency)
+        result = amount / HRK_EUR_RATE * rate.median_rate
+        result_eur = amount / HRK_EUR_RATE
+    elif source_currency != 'EUR' and target_currency == 'HRK':
+        rate = _get_rate(date, source_currency)
+        result = amount / rate.median_rate * HRK_EUR_RATE
+        result_eur = amount / rate.median_rate
+
+    exponent = Decimal(10) ** -precision
+    result = result.quantize(exponent)
+
+    hrk_exp = Decimal(10) ** -4
+    hrk_rate = HRK_EUR_RATE.quantize(hrk_exp)
+    result_eur = result_eur.quantize(exponent)
+
+    print_conversion(amount, result, source_currency, target_currency, rate, value_only=value_only, result_eur=result_eur, hrk_rate=hrk_rate)
+
+
+def convert_eurhrk(amount, source_currency, target_currency, date, precision, value_only, **kwargs):
+    if source_currency == 'HRK' and target_currency == 'EUR':
+        rate = _get_rate(date, target_currency)
+        result = amount / rate.median_rate
+    elif source_currency == 'EUR' and target_currency == 'HRK':
+        rate = _get_rate(date, source_currency)
+        result = amount * rate.median_rate
+
+    exponent = Decimal(10) ** -precision
+    result = result.quantize(exponent)
+
+    print_conversion(amount, result, source_currency, target_currency, rate, value_only=value_only)
 
 
 def abspath(path):
